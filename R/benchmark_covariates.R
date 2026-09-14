@@ -1,3 +1,13 @@
+#' Benchmark Robustness Values Based on Observed Covariates
+#'
+#' @param w the instrument vector, a numeric (double) vector with no NA values
+#' @param z the treatment vector, a numeric (double) vector with no NA values
+#' @param y the outcome vecctor, a numeric (double) vector with no NA values
+#' @param X a matrix of control covaraites used for benchmarking
+#'
+#' @return a dataframe containing the robustness values associated with held out covariates
+#'
+#' @export
 benchmark_covariates <- function(w, z, y, X) {
   X <- cbind(1,X)
   p <- ncol(X)
