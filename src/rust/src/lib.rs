@@ -21,28 +21,30 @@ use num_dual::DualNum;
 
 use crate::calc_rv::{calc_rv, Method, RvResult};
 
-use rand::{rngs::SmallRng, Rng, SeedableRng};
-use rand_distr::{Distribution, Exp};
+// use rand_distr::{Distribution, Exp};
 
-fn new_weights_vec<R: Rng + ?Sized>(n: usize, rng: &mut R) -> Vec<f64> {
-    assert!(n > 0, "Must have at least one observation");
-
-    let exp = Exp::new(1.0).unwrap();
-    let mut weights: Vec<f64> = (0..n).map(|_| exp.sample(rng)).collect();
-
-    let total: f64 = weights.iter().sum();
-    for weight in &mut weights {
-        *weight /= total;
-    }
-
-    weights
-}
+// fn new_weights_vec<R: Rng + ?Sized>(n: usize, rng: &mut R) -> Vec<f64> {
+//     assert!(n > 0, "Must have at least one observation");
+//
+//     let exp = Exp::new(1.0).unwrap();
+//     let mut weights: Vec<f64> = (0..n).map(|_| exp.sample(rng)).collect();
+//
+//     let total: f64 = weights.iter().sum();
+//     for weight in &mut weights {
+//         *weight /= total;
+//     }
+//
+//     weights
+// }
 
 #[allow(dead_code)]
 #[extendr]
-#[derive(Clone, Debug, Copy)]
+#[derive(Clone, Debug)]
 struct CovarianceMatrix {
     mat: Matrix3<f64>,
+    w: Vec<f64>,
+    z: Vec<f64>,
+    y: Vec<f64>,
 }
 
 impl CovarianceMatrix {
@@ -103,16 +105,14 @@ impl CovarianceMatrix {
     fn new(w: Vec<f64>, z: Vec<f64>, y: Vec<f64>) -> Self {
         let mat = covariance_matrix_wzy(&w, &z, &y).expect("Could Not Create Covaraiance Matrix");
 
-        Self { mat }
+        Self { mat, w, z, y }
     }
 
     fn iv_estimate(&self) -> f64 {
-        // Cov(W, Y) / Cov(W, Z)
         self.mat[(0, 2)] / self.mat[(0, 1)]
     }
 
     fn soo_estimate(&self) -> f64 {
-        // Coefficient on Z in the regression Y ~ Z + W.
         regr(&self.mat, &[1, 0], 2)[0]
     }
 
@@ -142,33 +142,33 @@ impl CovarianceMatrix {
         calc_rv(&self, b_soo, Method::Soo)
     }
 
-    fn calc_iv_rv_with_se(w: Vec<f64>, z: Vec<f64>, y: Vec<f64>, b_iv: f64) -> RvResult {
-        let mat = covariance_matrix_wzy(&w, &z, &y).expect("Could Not Create Covaraiance Matrix");
-
-        let cov_mat = Self { mat };
-
-        let rv = calc_rv(&cov_mat, b_iv, Method::Iv);
-
-        let mut rng = SmallRng::from_rng(&mut rand::rng());
-
-        let mut bootstrap_rvs = Vec::new();
-        for i in 0..1000 {
-            let weights = new_weights_vec(y.len(), &mut rng);
-
-            let mat = weighted_covariance_matrix_wzy(&w, &y, &z, &weights).unwrap();
-            dbg!(i);
-            dbg!(mat);
-            let inner_cov_mat = Self { mat };
-
-            let inner_rv = calc_rv(&inner_cov_mat, b_iv, Method::Iv).rv;
-
-            bootstrap_rvs.push(inner_rv)
-        }
-
-        println!("bootstrap_rvs {:?}", bootstrap_rvs);
-
-        rv
-    }
+    // fn calc_iv_rv_with_se(w: Vec<f64>, z: Vec<f64>, y: Vec<f64>, b_iv: f64) -> RvResult {
+    //     let mat = covariance_matrix_wzy(&w, &z, &y).expect("Could Not Create Covaraiance Matrix");
+    //
+    //     let cov_mat = Self { mat, w, z };
+    //
+    //     let rv = calc_rv(&cov_mat, b_iv, Method::Iv);
+    //
+    //     let mut rng = SmallRng::from_rng(&mut rand::rng());
+    //
+    //     let mut bootstrap_rvs = Vec::new();
+    //     for i in 0..1000 {
+    //         let weights = new_weights_vec(y.len(), &mut rng);
+    //
+    //         let mat = weighted_covariance_matrix_wzy(&w, &y, &z, &weights).unwrap();
+    //         dbg!(i);
+    //         dbg!(mat);
+    //         let inner_cov_mat = Self { mat };
+    //
+    //         let inner_rv = calc_rv(&inner_cov_mat, b_iv, Method::Iv).rv;
+    //
+    //         bootstrap_rvs.push(inner_rv)
+    //     }
+    //
+    //     println!("bootstrap_rvs {:?}", bootstrap_rvs);
+    //
+    //     rv
+    // }
 }
 
 struct ExtendedCovMatCore<D> {

@@ -25,8 +25,6 @@ CovarianceMatrix$iv_rv <- function(b_iv) .Call(wrap__CovarianceMatrix__iv_rv, se
 
 CovarianceMatrix$soo_rv <- function(b_soo) .Call(wrap__CovarianceMatrix__soo_rv, self, b_soo)
 
-CovarianceMatrix$calc_iv_rv_with_se <- function(w, z, y, b_iv) .Call(wrap__CovarianceMatrix__calc_iv_rv_with_se, w, z, y, b_iv)
-
 #' @export
 `$.CovarianceMatrix` <- function (self, name) { func <- CovarianceMatrix[[name]]; environment(func) <- environment(); func }
 
