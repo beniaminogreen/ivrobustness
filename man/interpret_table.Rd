@@ -18,3 +18,26 @@ Struggling to interpret the results of \code{robustness_values}? Look no further
 values of a design. It interprets each of the four robustness values for you,
 and flags low robustness values.
 }
+\examples{
+create_simulation <- function(n=10^7, rho = .5) {
+ w <- rnorm(n)
+ z <- sqrt(rho)*w + sqrt(1-rho)*rnorm(n)
+ y <- 2*z + rnorm(n)
+
+ return(list(
+   w = w, 
+   z = z, 
+   y = y
+ ))
+}
+
+
+weak_instrument_data <- create_simulation(rho = .01)
+
+df <- robustness_values(
+ weak_instrument_data$w, 
+ weak_instrument_data$z, 
+ weak_instrument_data$y
+)
+interpret_table(df)
+}

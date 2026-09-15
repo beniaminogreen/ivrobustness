@@ -13,6 +13,13 @@ SystemRequirements: Cargo (Rust's package manager), rustc >= 1.65.0, xz
 Depends: 
     R (>= 4.2)
 Suggests: 
+    RTMB,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 URL: http://archive.beniamino.org/ivrobustness/
+Imports: 
+    dplyr,
+    purrr,
+    rlang,
+    stringr,
+    tibble

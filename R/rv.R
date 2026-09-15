@@ -18,6 +18,34 @@
 #'  This should be negligible and close to the machine tolerance. 
 #'
 #' @export
+#' @examples 
+#'create_simulation <- function(n=10^7, rho = .5) {
+#'  w <- rnorm(n)
+#'  z <- sqrt(rho)*w + sqrt(1-rho)*rnorm(n)
+#'  y <- 2*z + rnorm(n)
+#'
+#'  return(list(
+#'    w = w, 
+#'    z = z, 
+#'    y = y
+#'  ))
+#'}
+#'
+#'
+#'strong_instrument_data <- create_simulation(rho = .90)
+#'weak_instrument_data <- create_simulation(rho = .01)
+#'
+#'robustness_values(
+#'  strong_instrument_data$w, 
+#'  strong_instrument_data$z, 
+#'  strong_instrument_data$y
+#')
+#'
+#'robustness_values(
+#'  weak_instrument_data$w, 
+#'  weak_instrument_data$z, 
+#'  weak_instrument_data$y
+#')
 robustness_values <- function(w, z, y) {
   stopifnot(
     "Instrument and treatment vectors must have same length" = length(w) == length(z)
@@ -45,13 +73,13 @@ robustness_values <- function(w, z, y) {
   exog_iv_rv <- cmat$exogenous_iv_rv(iv_estimate)
   exclud_iv_rv <- cmat$excludable_iv_rv(iv_estimate)
 
-  iv_df <- bind_rows(iv_rv, exog_iv_rv, exclud_iv_rv)
+  iv_df <- dplyr::bind_rows(iv_rv, exog_iv_rv, exclud_iv_rv)
   iv_df$estimate <- iv_estimate
 
-  soo_df <- as_tibble(soo_rv)
+  soo_df <- tibble::as_tibble(soo_rv)
   soo_df$estimate <- soo_estimate 
 
-  return(bind_rows(soo_df, iv_df))
+  return(dplyr::bind_rows(soo_df, iv_df))
 }
 
 
@@ -66,8 +94,32 @@ robustness_values <- function(w, z, y) {
 #' @param df a datasdrame, as returned by `robustness_values`
 #'
 #' @return A string 
+#'
+#' @export
+#' @examples
+#'create_simulation <- function(n=10^7, rho = .5) {
+#'  w <- rnorm(n)
+#'  z <- sqrt(rho)*w + sqrt(1-rho)*rnorm(n)
+#'  y <- 2*z + rnorm(n)
+#'
+#'  return(list(
+#'    w = w, 
+#'    z = z, 
+#'    y = y
+#'  ))
+#'}
+#'
+#'
+#'weak_instrument_data <- create_simulation(rho = .01)
+#'
+#'df <- robustness_values(
+#'  weak_instrument_data$w, 
+#'  weak_instrument_data$z, 
+#'  weak_instrument_data$y
+#')
+#'interpret_table(df)
 interpret_table <- function(df) {
-  paragraphs <- lapply(seq_len(nrow(df)), function(i) {
+  paragraphs <- purrr::map(seq_len(nrow(df)), function(i) {
     rv <- signif(df$rv[i], 3)
     bias <- signif(df$bias[i], 3)
     pct <- signif(100 * df$rv[i], 3)
@@ -109,6 +161,8 @@ interpret_table <- function(df) {
       return(out)
     }
   })
+
+  context <- ("Consider reading the associated paper for more information on interpreting robustness values (https://arxiv.org/pdf/2507.23743)")
 
   paste(c(unlist(paragraphs, use.names = FALSE), context), collapse = "\n\n")
 }

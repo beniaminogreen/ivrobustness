@@ -12,7 +12,7 @@ benchmark_covariates <- function(w, z, y, X) {
   X <- cbind(1,X)
   p <- ncol(X)
 
-  rhos <- map(2:ncol(X), function(i) { 
+  rhos <- purrr::map(2:ncol(X), function(i) { 
     subset_x <- X[,-i]
     u <- X[,i]
 
@@ -22,7 +22,7 @@ benchmark_covariates <- function(w, z, y, X) {
 
     vars <- cbind(u,w,z,y)
 
-    S <- cov(residual_maker_matrix %*% vars)
+    S <- stats::cov(residual_maker_matrix %*% vars)
 
     pcor <- function(indices) {
         P <- solve(S[indices, indices, drop = FALSE])
@@ -40,10 +40,10 @@ benchmark_covariates <- function(w, z, y, X) {
 
   original_tau <- model$extend(c(0,0,0))$tau()
 
-  out <- rhos %>% map(
+  out <- rhos %>% purrr::map(
     function(rho) {
       bench <- model$extend(rho)
-      benchmark_strength <- tibble(
+      benchmark_strength <- tibble::tibble(
         SOO_RV = max(bench$soo_z()^2, bench$soo_y()^2),
         IV_RV  = max(bench$iv_z()^2,  bench$iv_y()^2), 
         tau = bench$tau(), 
@@ -56,12 +56,12 @@ benchmark_covariates <- function(w, z, y, X) {
       return(benchmark_strength)
     }
   ) %>% 
-    bind_rows()
+    dplyr::bind_rows()
 
   if (!is.null(colnames(X))) { 
     out$variable <- colnames(X)[-1] 
     out <- out %>% 
-      relocate(variable)
+      dplyr::relocate(variable)
   }
 
   return(out)

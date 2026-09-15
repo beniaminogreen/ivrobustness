@@ -34,3 +34,32 @@ This should be negligible and close to the machine tolerance.
 \description{
 Calculate Robustness Values
 }
+\examples{
+create_simulation <- function(n=10^7, rho = .5) {
+ w <- rnorm(n)
+ z <- sqrt(rho)*w + sqrt(1-rho)*rnorm(n)
+ y <- 2*z + rnorm(n)
+
+ return(list(
+   w = w, 
+   z = z, 
+   y = y
+ ))
+}
+
+
+strong_instrument_data <- create_simulation(rho = .90)
+weak_instrument_data <- create_simulation(rho = .01)
+
+robustness_values(
+ strong_instrument_data$w, 
+ strong_instrument_data$z, 
+ strong_instrument_data$y
+)
+
+robustness_values(
+ weak_instrument_data$w, 
+ weak_instrument_data$z, 
+ weak_instrument_data$y
+)
+}
