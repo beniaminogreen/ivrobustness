@@ -45,8 +45,67 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="ivrobustness">ivrobustness<a class="anchor" aria-label="anchor" href="#ivrobustness"></a>
+<div class="page-header"><h1 id="ivrobustness">IVrobustness<a class="anchor" aria-label="anchor" href="#ivrobustness"></a>
 </h1></div>
+<p><code>IVrobustness</code> allows you to construct the robustness values for comparing various identification strategies described by <a href="https://arxiv.org/pdf/2507.23743" class="external-link">Huang and McCartan (2026)</a> for selection on observables and instrumental variables designs.</p>
+<p>At the moment the following features are supported:</p>
+<ul>
+<li>Calculating Robustness Values (RVs) for selection-on-observables and IV designs.</li>
+<li>Benchmarking the robustness values using held-out covariates</li>
+</ul>
+<p>Future versions will include:</p>
+<ul>
+<li>Standard errors and confidence intervals for Robustness Values based on</li>
+</ul>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>To use the package, you must first install it. The core of the package is written in <a href="https://rust-lang.org/" class="external-link">Rust</a> for speed, which means you must have a rust compiler installed if you are building the package from scratch. If you don’t want to do this, you can use the versions hosted on R-universe, which are available for all major platforms.</p>
+<div class="section level3">
+<h3 id="installing-compiled-version-from-r-universe">Installing Compiled Version from R-Universe:<a class="anchor" aria-label="anchor" href="#installing-compiled-version-from-r-universe"></a>
+</h3>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'ivrobustness'</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://beniaminogreen.r-universe.dev'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="installing-rust">Installing Rust<a class="anchor" aria-label="anchor" href="#installing-rust"></a>
+</h3>
+<p>If your operating system or version of R is not installed, you must have the <a href="https://rust-lang.org/tools/install/" class="external-link">Rust compiler</a> installed to compile this package from sources. After the package is compiled, Rust is no longer required, and can be safely uninstalled.</p>
+<div class="section level4">
+<h4 id="installing-rust-on-linux-or-mac">Installing Rust on Linux or Mac:<a class="anchor" aria-label="anchor" href="#installing-rust-on-linux-or-mac"></a>
+</h4>
+<p>To install Rust on Linux or Mac, you can simply run the following snippet in your terminal.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--proto</span> <span class="st">'=https'</span> <span class="at">--tlsv1.2</span> <span class="at">-sSf</span> https://sh.rustup.rs <span class="kw">|</span> <span class="fu">sh</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="installing-rust-on-windows">Installing Rust on Windows:<a class="anchor" aria-label="anchor" href="#installing-rust-on-windows"></a>
+</h4>
+<p>To install Rust on windows, you can use the Rust installation wizard, <code>rustup-init.exe</code>, found <a href="https://forge.rust-lang.org/infra/other-installation-methods.html" class="external-link">at this site</a>. Depending on your version of Windows, you may see an error that looks something like this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>error<span class="sc">:</span> toolchain <span class="st">'stable-x86_64-pc-windows-gnu'</span> is not installed</span></code></pre></div>
+<p>In this case, you should run <code>rustup install stable-x86_64-pc_windows-gnu</code> to install the missing toolchain. If you’re missing another toolchain, simply type this in the place of <code>stable-x86_64-pc_windows-gnu</code> in the command above.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="installing-package-from-github">Installing Package from Github:<a class="anchor" aria-label="anchor" href="#installing-package-from-github"></a>
+</h3>
+<p>Once you have rust installed Rust, you should be able to install the package with either the install.packages function as above, or using the <code>install_github</code> function from the <code>devtools</code> package or with the <code>pkg_install</code> function from the <code>pak</code> package.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Install with devtools</span></span>
+<span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"beniaminogreen/ivrobustness"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Install with pak</span></span>
+<span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"beniaminogreen/ivrobustness"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="loading-the-package">Loading The Package<a class="anchor" aria-label="anchor" href="#loading-the-package"></a>
+</h3>
+<p>Once the package is installed, you can load it into memory as usual by typing:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://archive.beniamino.org/ivrobustness/">ivrobustness</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>

@@ -62,6 +62,32 @@ and flags low robustness values.</p>
     <p>A string</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">create_simulation</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">=</span><span class="fl">10</span><span class="op">^</span><span class="fl">7</span>, <span class="va">rho</span> <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span> <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">rho</span><span class="op">)</span><span class="op">*</span><span class="va">w</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">rho</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">2</span><span class="op">*</span><span class="va">z</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>   w <span class="op">=</span> <span class="va">w</span>, </span></span>
+<span class="r-in"><span>   z <span class="op">=</span> <span class="va">z</span>, </span></span>
+<span class="r-in"><span>   y <span class="op">=</span> <span class="va">y</span></span></span>
+<span class="r-in"><span> <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">weak_instrument_data</span> <span class="op">&lt;-</span> <span class="fu">create_simulation</span><span class="op">(</span>rho <span class="op">=</span> <span class="fl">.01</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="robustness_values.html">robustness_values</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="va">weak_instrument_data</span><span class="op">$</span><span class="va">w</span>, </span></span>
+<span class="r-in"><span> <span class="va">weak_instrument_data</span><span class="op">$</span><span class="va">z</span>, </span></span>
+<span class="r-in"><span> <span class="va">weak_instrument_data</span><span class="op">$</span><span class="va">y</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">interpret_table</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "The robustness value for selection on observables is 0.827. A bias of 2 requires an unobserved confounder to explain at least 82.7% of residual variation in at least one of the treatment or the outcome.\n\nThe robustness value for instrumental variables is 0.00458. A bias of 2 requires either the confounder to explain at least 0.458% of residual instrument variation, or the instrument to explain at least 0.458% of outcome variation remaining after adjusting for the treatment and confounder. This robustness value is below 5%. While there is no 'hard limit' on these values, a value this small means that relatively small violations of the corresponding identifying assumptions could drive the point estimate to zero.\n\nWith instrument exogeneity imposed, the robustness value is 0.0402. A bias of 2 requires the instrument to explain at least 4.02% of outcome variation remaining after adjusting for the treatment and confounder. This robustness value is below 5%. While there is no 'hard limit' on these values, a value this small means that relatively small violations of the corresponding identifying assumptions could drive the point estimate to zero.\n\nWith exclusion imposed, the robustness value is 0.00946. A bias of 2 requires the confounder to explain at least 0.946% of residual instrument variation. This robustness value is below 5%. While there is no 'hard limit' on these values, a value this small means that relatively small violations of the corresponding identifying assumptions could drive the point estimate to zero.\n\nConsider reading the associated paper for more information on interpreting robustness values (https://arxiv.org/pdf/2507.23743)"</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

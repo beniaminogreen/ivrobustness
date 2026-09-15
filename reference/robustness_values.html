@@ -71,6 +71,51 @@ zero (only relevant for ExogenousIV and ExcludableIV) and the actual value found
 This should be negligible and close to the machine tolerance.</p></li>
 </ul></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">create_simulation</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">=</span><span class="fl">10</span><span class="op">^</span><span class="fl">7</span>, <span class="va">rho</span> <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span> <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">rho</span><span class="op">)</span><span class="op">*</span><span class="va">w</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">rho</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">2</span><span class="op">*</span><span class="va">z</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>   w <span class="op">=</span> <span class="va">w</span>, </span></span>
+<span class="r-in"><span>   z <span class="op">=</span> <span class="va">z</span>, </span></span>
+<span class="r-in"><span>   y <span class="op">=</span> <span class="va">y</span></span></span>
+<span class="r-in"><span> <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">strong_instrument_data</span> <span class="op">&lt;-</span> <span class="fu">create_simulation</span><span class="op">(</span>rho <span class="op">=</span> <span class="fl">.90</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">weak_instrument_data</span> <span class="op">&lt;-</span> <span class="fu">create_simulation</span><span class="op">(</span>rho <span class="op">=</span> <span class="fl">.01</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">robustness_values</span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="va">strong_instrument_data</span><span class="op">$</span><span class="va">w</span>, </span></span>
+<span class="r-in"><span> <span class="va">strong_instrument_data</span><span class="op">$</span><span class="va">z</span>, </span></span>
+<span class="r-in"><span> <span class="va">strong_instrument_data</span><span class="op">$</span><span class="va">y</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   method           rv    rho_1 rho_2 rho_3  bias assumption_gap estimate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Soo          0.463  4.56<span style="color: #949494;">e</span><span style="color: #BB0000;">- 5</span> 0.681 0.681  2.00       0   <span style="color: #949494;"> </span>        2.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Iv           0.019<span style="text-decoration: underline;">9</span> 3.85<span style="color: #949494;">e</span><span style="color: #BB0000;">- 2</span> 0.975 0.145  2.00       0   <span style="color: #949494;"> </span>        2.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> ExogenousIV  0.019<span style="text-decoration: underline;">9</span> 3.30<span style="color: #949494;">e</span><span style="color: #BB0000;">-12</span> 0.975 0.145  2.00       3.30<span style="color: #949494;">e</span><span style="color: #BB0000;">-12</span>     2.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> ExcludableIV 0.720  8.48<span style="color: #949494;">e</span><span style="color: #BB0000;">- 1</span> 0.535 1.000  2.00       1.38<span style="color: #949494;">e</span><span style="color: #BB0000;">-13</span>     2.00</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">robustness_values</span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="va">weak_instrument_data</span><span class="op">$</span><span class="va">w</span>, </span></span>
+<span class="r-in"><span> <span class="va">weak_instrument_data</span><span class="op">$</span><span class="va">z</span>, </span></span>
+<span class="r-in"><span> <span class="va">weak_instrument_data</span><span class="op">$</span><span class="va">y</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   method            rv     rho_1 rho_2 rho_3  bias assumption_gap estimate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Soo          0.827   -<span style="color: #BB0000;">1.67</span><span style="color: #949494;">e</span><span style="color: #BB0000;">- 4</span> 0.910 0.910  2.00       0   <span style="color: #949494;"> </span>        2.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Iv           0.004<span style="text-decoration: underline;">63</span>  6.80<span style="color: #949494;">e</span><span style="color: #BB0000;">- 2</span> 0.974 0.464  2.00       0   <span style="color: #949494;"> </span>        2.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> ExogenousIV  0.040<span style="text-decoration: underline;">6</span>   3.33<span style="color: #949494;">e</span><span style="color: #BB0000;">-12</span> 0.975 0.457  2.00       3.33<span style="color: #949494;">e</span><span style="color: #BB0000;">-12</span>     2.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> ExcludableIV 0.009<span style="text-decoration: underline;">56</span>  9.78<span style="color: #949494;">e</span><span style="color: #BB0000;">- 2</span> 0.975 0.457  2.00       4.26<span style="color: #949494;">e</span><span style="color: #BB0000;">-12</span>     2.00</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
