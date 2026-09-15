@@ -1,8 +1,8 @@
 Package: ivrobustness
-Title: What the Package Does (One Line, Title Case)
+Title: Robustness Values for Causal Estimation 
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
+    person("Beniamino", "Green", , "beniamino.green@yale.edu", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 License: GPL (>= 3)
 Encoding: UTF-8
