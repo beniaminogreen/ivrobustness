@@ -2,17 +2,17 @@
 
 ## Authors
 
-- **First Last**. Author, maintainer.
+- **Beniamino Green**. Author, maintainer.
 
 ## Citation
 
-Last F (2026). *ivrobustness: What the Package Does (One Line, Title
-Case)*. R package version 0.0.0.9000,
+Green B (2026). *ivrobustness: Robustness Values for Causal Estimation*.
+R package version 0.0.0.9000,
 <http://archive.beniamino.org/ivrobustness/>.
 
     @Manual{,
-      title = {ivrobustness: What the Package Does (One Line, Title Case)},
-      author = {First Last},
+      title = {ivrobustness: Robustness Values for Causal Estimation},
+      author = {Beniamino Green},
       year = {2026},
       note = {R package version 0.0.0.9000},
       url = {http://archive.beniamino.org/ivrobustness/},
