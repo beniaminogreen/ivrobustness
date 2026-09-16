@@ -5,7 +5,7 @@ Calculate Robustness Values
 ## Usage
 
 ``` r
-robustness_values(w, z, y)
+robustness_values(w, z, y, X = NULL)
 ```
 
 ## Arguments
@@ -21,6 +21,10 @@ robustness_values(w, z, y)
 - y:
 
   the outcome vecctor, a numeric (double) vector with no NA values
+
+- X:
+
+  an optional matrix of covariates to residualize on
 
 ## Value
 
