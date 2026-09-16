@@ -21,7 +21,7 @@ test_that("Extend Covariance Matrix is Self-Consistent", {
   out_mat <- x$to_r_mat()
   extended_out_mat <- x$extend(c(0,0,0))$to_r_mat()
 
-  expect_true(max(abs(out_mat - extended_out_mat[2:4,2:4])) < 10^6)
+  expect_true(max(abs(out_mat - extended_out_mat[2:4,2:4])) < 10^-6)
 
 })
 
@@ -60,7 +60,7 @@ test_that("Sensitivity Parameters are right on toy example", {
   expect_equal(extended$iv_z(), 0)
 }) 
 
-test_that("Robustness values match implimentations", {
+test_that("arrows values match implimentations", {
   x <- CovarianceMatrix$new(
     iris$Sepal.Width,
     iris$Sepal.Length,

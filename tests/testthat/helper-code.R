@@ -242,7 +242,7 @@ calc_rv <- function(
 
 calc_rvs <- function(S0, b) {
     methods = c("soo", "iv")
-    ub = c(1, 0.99, 1)
+    ub = c(1, 0.95, 1)
     est = ests(sigma_ext(S0))
 
     if (is.null(names(b))) {

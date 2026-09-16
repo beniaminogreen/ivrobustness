@@ -16,7 +16,7 @@ testthat::test_that("SOO rvs agree", {
     })
 
   if (!ok) {
-    print("Skipping")
+    print("Skipping SOO")
     next
   }
 
@@ -43,7 +43,7 @@ testthat::test_that("IV rvs agree", {
       })
 
   if (!ok) {
-    print("Skipping")
+    print("Skipping IV Test")
     next
   }
 
