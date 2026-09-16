@@ -4,7 +4,7 @@
 \alias{robustness_values}
 \title{Calculate Robustness Values}
 \usage{
-robustness_values(w, z, y)
+robustness_values(w, z, y, X = NULL)
 }
 \arguments{
 \item{w}{the instrument vector, a numeric (double) vector with no NA values}
@@ -12,6 +12,8 @@ robustness_values(w, z, y)
 \item{z}{the treatment vector, a numeric (double) vector with no NA values}
 
 \item{y}{the outcome vecctor, a numeric (double) vector with no NA values}
+
+\item{X}{an optional matrix of covariates to residualize on}
 }
 \value{
 a dataframe containing robustness values with the following columns:

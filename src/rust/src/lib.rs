@@ -101,6 +101,7 @@ impl CovarianceMatrix {
 
 #[allow(dead_code)]
 #[extendr]
+/// @export
 impl CovarianceMatrix {
     fn new(w: Vec<f64>, z: Vec<f64>, y: Vec<f64>) -> Self {
         let mat = covariance_matrix_wzy(&w, &z, &y).expect("Could Not Create Covaraiance Matrix");
@@ -226,6 +227,7 @@ struct ExtendedCovarianceMatrix {
 }
 
 #[extendr]
+/// @export
 impl ExtendedCovarianceMatrix {
     fn to_r_mat(&self) -> RMatrix<f64> {
         RMatrix::new_matrix(5, 5, |row, col| self.core.mat[(row, col)])

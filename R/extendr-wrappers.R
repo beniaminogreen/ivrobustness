@@ -5,6 +5,7 @@
 #' @useDynLib ivrobustness, .registration = TRUE
 NULL
 
+#' @export
 CovarianceMatrix <- new.env(parent = emptyenv())
 
 CovarianceMatrix$new <- function(w, z, y) .Call(wrap__CovarianceMatrix__new, w, z, y)
@@ -25,12 +26,15 @@ CovarianceMatrix$iv_rv <- function(b_iv) .Call(wrap__CovarianceMatrix__iv_rv, se
 
 CovarianceMatrix$soo_rv <- function(b_soo) .Call(wrap__CovarianceMatrix__soo_rv, self, b_soo)
 
+#' @rdname CovarianceMatrix
+#' @usage NULL
 #' @export
 `$.CovarianceMatrix` <- function (self, name) { func <- CovarianceMatrix[[name]]; environment(func) <- environment(); func }
 
 #' @export
 `[[.CovarianceMatrix` <- `$.CovarianceMatrix`
 
+#' @export
 ExtendedCovarianceMatrix <- new.env(parent = emptyenv())
 
 ExtendedCovarianceMatrix$to_r_mat <- function() .Call(wrap__ExtendedCovarianceMatrix__to_r_mat, self)
@@ -49,6 +53,8 @@ ExtendedCovarianceMatrix$iv_z <- function() .Call(wrap__ExtendedCovarianceMatrix
 
 ExtendedCovarianceMatrix$iv_y <- function() .Call(wrap__ExtendedCovarianceMatrix__iv_y, self)
 
+#' @rdname ExtendedCovarianceMatrix
+#' @usage NULL
 #' @export
 `$.ExtendedCovarianceMatrix` <- function (self, name) { func <- ExtendedCovarianceMatrix[[name]]; environment(func) <- environment(); func }
 

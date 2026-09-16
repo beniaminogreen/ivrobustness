@@ -12,7 +12,7 @@
 benchmark_covariates <- function(w, z, y, X) {
   p <- ncol(X)
 
-  rhos <- purrr::map(seq(p), function(i) { 
+  rhos <- purrr::map(seq(p)[-1], function(i) { 
     u <- X[,i]
     subset_x <- X[, -i, drop = FALSE]
     vars <- cbind(u = X[, i], w, z, y)
@@ -25,9 +25,24 @@ benchmark_covariates <- function(w, z, y, X) {
 
     S <- stats::cov(residuals)
 
+    if (sd(residuals[,1]) < 10^-6) { 
+      return(c(0,0,0))
+    }
+
+    # pcor <- function(indices) {
+    #     P <- solve(S[indices, indices, drop = FALSE])
+    #     -P[1, 2] / sqrt(P[1, 1] * P[2, 2])
+    # }
     pcor <- function(indices) {
-        P <- solve(S[indices, indices, drop = FALSE])
-        -P[1, 2] / sqrt(P[1, 1] * P[2, 2])
+      P <- tryCatch(
+        solve(S[indices, indices, drop = FALSE]),
+        error = function(e) NULL
+      )
+
+
+      if (is.null(P)) return(NA_real_)
+
+      -P[1, 2] / sqrt(P[1, 1] * P[2, 2])
     }
 
     c(
@@ -46,9 +61,9 @@ benchmark_covariates <- function(w, z, y, X) {
       bench <- model$extend(rho)
 
       SOO_Z <- bench$soo_z()
-      SOO_y <- bench$soo_y()
-      IV_z <- bench$iv_z()
-      IV_y <- bench$iv_y()
+      SOO_Y <- bench$soo_y()
+      IV_Z <- bench$iv_z()
+      IV_Y <- bench$iv_y()
 
       SOO_RV = max(SOO_Z^2, SOO_Y^2)
       IV_RV  = max(IV_Z^2,  IV_Y^2)
@@ -73,7 +88,7 @@ benchmark_covariates <- function(w, z, y, X) {
     dplyr::bind_rows()
 
   if (!is.null(colnames(X))) { 
-    out$variable <- colnames(X)
+    out$variable <- colnames(X)[-1]
     out <- out %>% 
       dplyr::relocate("variable")
   }
