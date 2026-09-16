@@ -3,6 +3,7 @@
 #' @param w the instrument vector, a numeric (double) vector with no NA values
 #' @param z the treatment vector, a numeric (double) vector with no NA values
 #' @param y the outcome vecctor, a numeric (double) vector with no NA values
+#' @param X an optional matrix of covariates to residualize on
 #'
 #' @return a dataframe containing robustness values with the following columns: 
 #'  - *Method* The method for the associated Robustness Value: 
@@ -46,7 +47,7 @@
 #'  weak_instrument_data$z, 
 #'  weak_instrument_data$y
 #')
-robustness_values <- function(w, z, y) {
+robustness_values <- function(w, z, y, X = NULL) {
   stopifnot(
     "Instrument and treatment vectors must have same length" = length(w) == length(z)
   )
@@ -58,6 +59,20 @@ robustness_values <- function(w, z, y) {
   stopifnot("Instrument must be a double vector" = is.double(w))
   stopifnot("Treatment must be a double vector" = is.double(z))
   stopifnot("Outcome must be a double vector" = is.double(y))
+
+
+  if (!is.null(X)) {
+    vars <- cbind(w, z, y)
+    residuals <- stats::lm.fit(
+        x = X,
+        y = vars,
+        singular.ok = TRUE
+      )$residuals
+
+    w <- residuals[,1]
+    z <- residuals[,2]
+    y <- residuals[,3]
+  }
 
   cmat <- CovarianceMatrix$new(
     w, 

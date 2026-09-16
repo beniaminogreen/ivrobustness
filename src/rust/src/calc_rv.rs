@@ -7,8 +7,8 @@ use num_dual::{Dual64, DualNum};
 
 use crate::{CovarianceMatrix, ExtendedCovMatCore};
 
-const TOL: f64 = 1.0e-10; // Same default tolerance as the R calc_rv function.
-                          //
+const TOL: f64 = 1.0e-5;
+//
 use extendr_api::prelude::*;
 
 #[derive(Clone, Copy, Debug)]
