@@ -132,7 +132,7 @@ robustness_values <- function(w, z, y, X = NULL) {
 #'  weak_instrument_data$z, 
 #'  weak_instrument_data$y
 #')
-#'interpret_table(df)
+#'cat(interpret_table(df))
 interpret_table <- function(df) {
   paragraphs <- purrr::map(seq_len(nrow(df)), function(i) {
     rv <- signif(df$rv[i], 3)

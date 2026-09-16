@@ -52,7 +52,18 @@ benchmark_covariates <- function(w, z, y, X) {
     )
   })
 
-  model <- CovarianceMatrix$new(w, z, y)
+  # model <- CovarianceMatrix$new(w, z, y)
+  base_residuals <- stats::lm.fit(
+    x = X,
+    y = cbind(w, z, y),
+    singular.ok = TRUE
+  )$residuals
+
+  model <- CovarianceMatrix$new(
+    base_residuals[, 1L],
+    base_residuals[, 2L],
+    base_residuals[, 3L]
+  )
 
   original_tau <- model$extend(c(0,0,0))$tau()
 

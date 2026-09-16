@@ -39,5 +39,5 @@ df <- robustness_values(
  weak_instrument_data$z, 
  weak_instrument_data$y
 )
-interpret_table(df)
+cat(interpret_table(df))
 }
