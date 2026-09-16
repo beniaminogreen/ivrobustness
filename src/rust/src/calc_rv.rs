@@ -7,6 +7,7 @@ use num_dual::{Dual64, DualNum};
 
 use crate::{CovarianceMatrix, ExtendedCovMatCore};
 
+// Dimensionless tolerance: bias gaps are divided by the residual SD ratio.
 const TOL: f64 = 1.0e-5;
 //
 use extendr_api::prelude::*;
@@ -82,6 +83,7 @@ struct Objective<'a> {
     method: Method,
     estimate: f64,
     target_bias: f64,
+    bias_scale: f64,
     penalty: f64,
 }
 
@@ -93,7 +95,8 @@ impl Objective<'_> {
         let [a, b] = self.method.arrows(&s).map(|v| v.powi(2));
         let rv = if a.re() >= b.re() { a } else { b };
 
-        let gap = D::from(self.estimate - self.target_bias) - s.tau();
+        let gap = (D::from(self.estimate - self.target_bias) - s.tau())
+            / D::from(self.bias_scale);
         let assumption_gap = self.method.assumption_gap(&s);
 
         let ridge = rho.iter().fold(D::from(0.0), |sum, p| sum + p.powi(2));
@@ -202,8 +205,21 @@ fn minimize(objective: Objective<'_>, start: Vec<f64>) -> Vec<f64> {
 pub(crate) fn calc_rv(covariance: &CovarianceMatrix, target_bias: f64, method: Method) -> RvResult {
     assert!(target_bias.is_finite(), "Target bias must be finite");
     assert!(
-        covariance.mat.iter().all(|v| v.is_finite()) && covariance.mat.cholesky().is_some(),
+        covariance.mat.iter().all(|v| v.is_finite()),
         "Covariance matrix must be finite and positive definite"
+    );
+    let lower = covariance
+        .mat
+        .cholesky()
+        .expect("Covariance matrix must be finite and positive definite")
+        .l();
+    // Observed variable order: W, Z, Y. The Cholesky diagonal gives
+    // SD(Z | W) and SD(Y | W, Z), without subtracting residual variances.
+    // This scale is fixed across candidate confounders and has bias units.
+    let bias_scale = lower[(2, 2)] / lower[(1, 1)];
+    assert!(
+        bias_scale.is_finite() && bias_scale > 0.0,
+        "Residual SD ratio must be finite and positive"
     );
     let baseline = covariance.extend_core([0.0_f64; 3]);
     if matches!(method, Method::Iv) {
@@ -238,6 +254,7 @@ pub(crate) fn calc_rv(covariance: &CovarianceMatrix, target_bias: f64, method: M
             method,
             estimate,
             target_bias,
+            bias_scale,
             penalty: 100.0 * 10.0_f64.powi(stage),
         };
 
@@ -249,7 +266,7 @@ pub(crate) fn calc_rv(covariance: &CovarianceMatrix, target_bias: f64, method: M
 
         let assumption_gap = method.assumption_gap(&s).abs();
 
-        gap = (bias - target_bias).abs();
+        gap = ((bias - target_bias) / bias_scale).abs();
         let movement = (0..3)
             .map(|i| (rho[i] - previous_rho[i]).abs())
             .fold(0.0, f64::max);
@@ -269,5 +286,5 @@ pub(crate) fn calc_rv(covariance: &CovarianceMatrix, target_bias: f64, method: M
         }
     }
 
-    panic!("RV did not converge within tolerance {TOL}; final bias gap = {gap}");
+    panic!("RV did not converge within tolerance {TOL}; final normalized bias gap = {gap}");
 }
